@@ -78,7 +78,7 @@ const bible = (function(){
                 process.stdout.cursorTo(0)
                 process.stdout.write(`${data[0]} ${((progress/1189)*100).toFixed(2)}% ${chapter[2].attributes.title.split(" ").slice(0, -1).join(" ")} ${chapter[2].attributes.title.split(" ").pop()} `)
                 result[chapter[2].attributes.title.split(" ").slice(0, -1).join(" ")].push([chapter[2].attributes.title.split(" ").pop(), Object.entries(chapter[1])])
-                fs.writeFileSync("./bibles/" + data[0] + ".json", JSON.stringify(Object.entries(result)))
+                fs.writeFileSync("./" + data[0] + ".json", JSON.stringify(Object.entries(result)))
             })
         })
     }
@@ -92,16 +92,13 @@ const bible = (function(){
     }
 })()
 
-if (!fs.existsSync("./bibles")) {
-    fs.mkdirSync("./bibles")
-}
-(async () => {
+async function start() {
     set = 0
     todownload = 0
     test = (await bible.getVersions()).filter((version) => (["NLT", "NKJV", "NIV", "AMP", "ASV", "ESV", "MSG", "AMPC"].includes(version[0])))
     id = setInterval(function(){
         if (set < test.length) {
-            if (counter === 0 && !fs.existsSync(`./bibles/${test[set][0]}.json`) && set === todownload) {
+            if (counter === 0 && !fs.existsSync(`./${test[set][0]}.json`) && set === todownload) {
                 todownload += 1
                 bible.download(test[set])
             } else if (counter > 1189-1) {
@@ -113,4 +110,6 @@ if (!fs.existsSync("./bibles")) {
             clearInterval(id)
         }
     }, 1000)
-})()
+}
+
+start()
